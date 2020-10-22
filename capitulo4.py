@@ -1,8 +1,12 @@
+def inicio():
+    print(""" BIENVENIDO A CÁLCULO DE FLUJO GRADUALMENTE VARIADO
+PARA SALIR EN CUALQUIER MOMENTO ESCRIBE: -EXIT()-
+---*---*---*---Jared DL---*---*---*---""")
+    seleccion_de_seccion()
+
 def seleccion_de_seccion() :
     global seccion_transversal
-    seccion_transversal = int(input("""BIENVENIDO A CÁLCULO DE FLUJO GRADUALMENTE VARIADO
-PARA SALIR EN CUALQUIER MOMENTO ESCRIBE: -EXIT()-
----*---*---*---Jared DL---*---*---*---
+    seccion_transversal = int(input("""
 Tipo de sección transversal:
 1. Rectangular
 2. Trapecial
@@ -14,7 +18,7 @@ Seleciona el tipo de sección transversal: """))
         print('SELECCIONASTE SECCIÓN TRAPECIAL')
         datos_principales()
     else :
-        print('SELECCIONA UNA OPCIÓN VÁLIDA')
+        print('SELECCIONA UNA OPCIÓN VÁLIDA!!!')
         seleccion_de_seccion()
 
     
@@ -132,9 +136,9 @@ def newton_rahpson_tirate_normal_para_seccion_trapecial() :
 
 def determinar_pendiente_del_canal() :
     global pendiente_del_canal
-    diferencia_de_soleras=Sc_pendiente_critica-So_pendiente_solera
+    diferencia_de_soleras=abs(Sc_pendiente_critica-So_pendiente_solera)
     print(f'diferencia de soleras: {diferencia_de_soleras}')
-    if ((Sc_pendiente_critica-So_pendiente_solera)<0.001) :
+    if ((diferencia_de_soleras)<0.001) :
         print(f'{So_pendiente_solera}={Sc_pendiente_critica}  ==> So=Sc Perfil Tipo C critico')
         pendiente_del_canal='C'
     elif So_pendiente_solera<Sc_pendiente_critica :
@@ -277,7 +281,7 @@ def preguntar_si_se_desea_hacer_mas_calculos_de_deltas_x() :
     volver_a_calcular_delta_x = int(input("""Deseas calcular mas deltas?
 0.NO (si eliges esta opción el programa finalizará)
 1.SI
-Elige una opción """))
+Elige una opción: """))
     if volver_a_calcular_delta_x == 1 :
         if seccion_transversal == 1 :
             calcular_delta_x_sección_rectangular()
@@ -316,4 +320,4 @@ def calcular_perimetro_mojado_trapecio(solera,tirante,Z_1) :
     perimetro=2*tirante*(Z_1**2+1)**(1/2)+solera
     return perimetro
 
-seleccion_de_seccion()
+inicio()
