@@ -7,7 +7,9 @@ El programa es bastante intuitivo ya que, toda la información o datos necesario
 - Al ejecutarlo a travez de una consola el programa pedirá elegir entre dos tipos de secciónes transversales del canal que se va a estudiar, por el momento solo se puede elegir entre una sección rectangular o una sección trapecial.
 - Despues de elegir el tipo de seccíón se pediran todos los Datos indispensables para que el programa pueda hacer todos los cálculos necesarios.
 - Al terminar de llenar los datos indispensables, aparecerán todas las carácteristicas calculadas del canal.
--Finalmente se podrá hallar la distancia "Delta X" entre dos puntos del canal tomando en cuenta la dirección de calculo "y1" como inicio y "y2" como final.
+- El programa preguntará que método se desea usar para proseguir. El método directo por tramos, permite hallar delta_x, dado el tirante final Y2. El método estándar por pasos, permite hallar el tirante final Y2, dado delta_x
+- Finalmente (si se eleigió el método directo por tramos) se podrá hallar la distancia "Delta X" entre dos puntos del canal tomando en cuenta la dirección de calculo "y1" como inicio y "y2" como final.
+- Finalmente (si se eleigió el método estándar por pasos) se podrá hallar el tirante Y, tomando en cuenta la dirección de calculo se llenará Y1, Z!, Z2 y delta_x. RECUERDA QUE SI SENTIDO DE CALCULO ES DE AGUAS ABAJO HACIA AGUAS ARRIBA DELTA_X SE DEBE ANOTAR CON SIGNO NEGATIVO.
 
 ## Motivo de la creación del programa
  Mientras mas aprendo de programación mas me doy cuenta que casi todos mis conocimientos de Ingeniería se pueden programar para resolver problemas, ya que casi todos  los problemas parecen ser "Programables", debido a que son mecánicos, solamente hace falta de un medio conocimiento de la materia o tema en cuestión para ser capaz de desarrollar un programa capáz de resollver todos los problemas que se presentan.
