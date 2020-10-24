@@ -327,6 +327,7 @@ def calcular_tirante_sección_rectangular() :
     Z2=float(input('Valor de altura 2 Z2[m]='))
     Y2=calcular_H2_para_seccion_rectangular(Y1,Z1,Z2,delta_x)
     print(f'el tirante´para un DeltaX={delta_x} es Y2={Y2} y el delta H2[m]={delta_H2_final}')
+    preguntar_si_se_desea_hacer_mas_calculos_de_tirantes()
     
 
 def calcular_H2_para_seccion_rectangular(tirante_inicial,altura_del_canal_inicial,altura_del_canal_final,delta_x):
@@ -443,6 +444,22 @@ def hallar_tirante_final_con_error_trapecial(tirante,pendiente_1,altura_de_energ
         delta_H2_final=delta_H2
         tirante_final_con_error += error
     return tirante_final_con_error
+
+def preguntar_si_se_desea_hacer_mas_calculos_de_tirantes() :
+    volver_a_calcular_tirantes = int(input("""Deseas calcular mas tirantes?
+0.NO (si eliges esta opción el programa finalizará)
+1.SI
+Elige una opción: """))
+    if volver_a_calcular_tirantes == 1 :
+        if seccion_transversal == 1 :
+            calcular_tirante_sección_rectangular()
+        elif seccion_transversal == 2 :
+            calcular_tirante_sección_trapecial()
+    elif volver_a_calcular_tirantes == 0 :
+        print('Gracias por usar mi Programa, atte: Jared DL')
+    else :
+        print('Seleciona una opcion válida!!!')
+        preguntar_si_se_desea_hacer_mas_calculos_de_tirantes()
 
 # FUNCIONES BÁSICAS:
 # solera es lo mismo que base
