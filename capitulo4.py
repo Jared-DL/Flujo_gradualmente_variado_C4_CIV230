@@ -75,7 +75,7 @@ def calculos_seccion_rectangular() :
     determinar_pendiente_del_canal()
     determinar_zona_del_perfil(pendiente_del_canal)
     determinar_tipo_de_perfil()
-    calcular_delta_x_sección_rectangular()
+    eleccion_del_metodo()
 
 
 def calculos_seccion_trapecial() :
@@ -97,7 +97,7 @@ def calculos_seccion_trapecial() :
     determinar_pendiente_del_canal()
     determinar_zona_del_perfil(pendiente_del_canal)
     determinar_tipo_de_perfil()
-    calcular_delta_x_sección_trapecial()
+    eleccion_del_metodo()
 
 def newton_rahpson_tirate_normal_para_seccion_rectangular() :
     yn=1.1
@@ -222,6 +222,31 @@ def determinar_tipo_de_perfil() :
     print(f'El tipo de flujo es: {tipo_de_flujo}')
     print(f'Sentido de calculo es: {sentido_de_calculo}')
 
+def eleccion_del_metodo() :
+    global metodo_elegido
+    opcion_de_metodo_elegido=int(input(""" Elige qué método de resolución a seguir:
+0. Método directo por tramos(Hallar Delta X dado Yo y Yf)
+1. Método estándar por pasos(Hallar Yf dado Yo y DeltaX)
+...: """))
+    if opcion_de_metodo_elegido == 0 :
+        metodo_elegido='Directo por tramos'
+        if seccion_transversal == 1 :
+            calcular_delta_x_sección_rectangular()
+        elif seccion_transversal == 2 :
+            calcular_delta_x_sección_trapecial()
+    elif opcion_de_metodo_elegido == 1 :
+        metodo_elegido='Directo por tramos'
+        print('RECUERDA QUE SI SENTIDO DE CALCULO ES DE AGUAS ABAJO HACIA AGUAS ARRIBA DELTA X SE DEBE ANOTAR CON SIGNO NEGATIVO')
+        if seccion_transversal == 1 :
+            calcular_tirante_sección_rectangular()
+        elif seccion_transversal == 2 :
+            calcular_tirante_sección_trapecial()
+    else :
+        print('elige una opcionn válida!!!')
+        eleccion_del_metodo()
+
+# MÉTODO DIRECTO POR TRAMOS:
+
 def calcular_delta_x_sección_rectangular() :
     print('Hallaremos la distancia X entre dos puntos del canal:')
     print('recuerda que si la dirección de cálculo es: -De aguas abajo HACIA aguas arriba- Y1 debe estar aguas abajo y Y2 debe estar aguas arriba')
@@ -293,7 +318,133 @@ Elige una opción: """))
         print('Seleciona una opcion válida!!!')
         preguntar_si_se_desea_hacer_mas_calculos_de_deltas_x()
 
-# funciones para calculo de áreas, perímetros, etc.
+# ESTÁNDAR POR PASOS:
+
+def calcular_tirante_sección_rectangular() :
+    Y1=float(input('Valor del tirante 1 Y1[m]='))
+    Z1=float(input('Valor de altura 1 Z1[m]='))
+    delta_x=float(input('Valor de Delta X [m]='))
+    Z2=float(input('Valor de altura 2 Z2[m]='))
+    Y2=calcular_H2_para_seccion_rectangular(Y1,Z1,Z2,delta_x)
+    print(f'el tirante´para un DeltaX={delta_x} es Y2={Y2} y el delta H2[m]={delta_H2_final}')
+    
+
+def calcular_H2_para_seccion_rectangular(tirante_inicial,altura_del_canal_inicial,altura_del_canal_final,delta_x):
+    A1=calcular_area_rectangulo(b_solera,tirante_inicial)
+    P1=calcular_perimetro_mojado_rectangulo(b_solera,tirante_inicial)
+    H1=calcular_altura_de_energía(altura_del_canal_inicial,tirante_inicial,Q_caudal,A1)
+    S1=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,P1,A1)
+    tirante_final=0.1
+    tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.1)
+    tirante_final-=0.1
+    tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.01)
+    tirante_final-=0.01
+    tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.001)
+    tirante_final-=0.001
+    tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.0001)
+    tirante_final-=0.0001
+    tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.00001)
+    A2=calcular_area_trapecio(b_solera,tirante_final,z_lateral_trapecio)
+    P2=calcular_perimetro_mojado_trapecio(b_solera,tirante_final,z_lateral_trapecio)
+    H2_1=calcular_altura_de_energía(altura_del_canal_inicial,tirante_final,Q_caudal,A2)
+    S2=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,P2,A2)
+    Sf=(S1+S2)/2
+    Hf=Sf*delta_x
+    H2_2=H1-Hf
+    print(f'A1[m2]= {A1}')
+    print(f'P1[m]= {P1}')
+    print(f'H1[m]= {H1}')
+    print(f'S1[m/m]= {S1}')
+    print(f'A2[m2]= {A2}')
+    print(f'P2[m]= {P2}')
+    print(f'H2_1[m]= {H2_1}')
+    print(f'S2[m/m]= {S2}')
+    print(f'Sf[m/m]= {Sf}')
+    print(f'Hf[m/m]= {Hf}')
+    print(f'H2_2[m]= {H2_2}')
+    print(f'Delta x[m]= {delta_x}')
+    return tirante_final
+
+def hallar_tirante_final_con_error_rectangular(tirante,pendiente_1,altura_de_energia_1,altura_del_canal_final,delta_x,error) :
+    global delta_H2_final
+    delta_H2=1
+    tirante_final_con_error=tirante
+    while delta_H2>error :
+        area=calcular_area_rectangulo(b_solera,tirante_final_con_error)
+        perimetro=calcular_perimetro_mojado_rectangulo(b_solera,tirante_final_con_error)
+        H2_1=calcular_altura_de_energía(altura_del_canal_final,tirante_final_con_error,Q_caudal,area)
+        S2=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,perimetro,area)
+        Sf=(pendiente_1+S2)/2
+        Hf=Sf*delta_x
+        H2_2=altura_de_energia_1-Hf
+        delta_H2=abs(H2_1-H2_2)
+        delta_H2_final=delta_H2
+        tirante_final_con_error += error
+    return tirante_final_con_error
+
+
+def calcular_tirante_sección_trapecial() :
+    Y1=float(input('Valor del tirante 1 Y1[m]='))
+    Z1=float(input('Valor de altura 1 Z1[m]='))
+    delta_x=float(input('Valor de Delta X [m]='))
+    Z2=float(input('Valor de altura 2 Z2[m]='))
+    Y2=calcular_H2_para_seccion_trapecial(Y1,Z1,Z2,delta_x)
+    print(f'El tirante para un DeltaX={delta_x} es Y2={Y2} y el delta H2[m]={delta_H2_final}')
+    
+def calcular_H2_para_seccion_trapecial(tirante_inicial,altura_del_canal_inicial,altura_del_canal_final,delta_x):
+    A1=calcular_area_trapecio(b_solera,tirante_inicial,z_lateral_trapecio)
+    P1=calcular_perimetro_mojado_trapecio(b_solera,tirante_inicial,z_lateral_trapecio)
+    H1=calcular_altura_de_energía(altura_del_canal_inicial,tirante_inicial,Q_caudal,A1)
+    S1=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,P1,A1)
+    tirante_final=0.1
+    tirante_final=hallar_tirante_final_con_error_trapecial(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.1)
+    tirante_final-=0.1
+    tirante_final=hallar_tirante_final_con_error_trapecial(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.01)
+    tirante_final-=0.01
+    tirante_final=hallar_tirante_final_con_error_trapecial(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.001)
+    tirante_final-=0.001
+    tirante_final=hallar_tirante_final_con_error_trapecial(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.0001)
+    tirante_final-=0.0001
+    tirante_final=hallar_tirante_final_con_error_trapecial(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.00001)
+    A2=calcular_area_trapecio(b_solera,tirante_final,z_lateral_trapecio)
+    P2=calcular_perimetro_mojado_trapecio(b_solera,tirante_final,z_lateral_trapecio)
+    H2_1=calcular_altura_de_energía(altura_del_canal_inicial,tirante_final,Q_caudal,A2)
+    S2=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,P2,A2)
+    Sf=(S1+S2)/2
+    Hf=Sf*delta_x
+    H2_2=H1-Hf
+    print(f'A1[m2]= {A1}')
+    print(f'P1[m]= {P1}')
+    print(f'H1[m]= {H1}')
+    print(f'S1[m/m]= {S1}')
+    print(f'A2[m2]= {A2}')
+    print(f'P2[m]= {P2}')
+    print(f'H2_1[m]= {H2_1}')
+    print(f'S2[m/m]= {S2}')
+    print(f'Sf[m/m]= {Sf}')
+    print(f'Hf[m/m]= {Hf}')
+    print(f'H2_2[m]= {H2_2}')
+    print(f'Delta x[m]= {delta_x}')
+    return tirante_final
+
+def hallar_tirante_final_con_error_trapecial(tirante,pendiente_1,altura_de_energia_1,altura_del_canal_final,delta_x,error) :
+    global delta_H2_final
+    delta_H2=1
+    tirante_final_con_error=tirante
+    while delta_H2>error :
+        area=calcular_area_trapecio(b_solera,tirante_final_con_error,z_lateral_trapecio)
+        perimetro=calcular_perimetro_mojado_trapecio(b_solera,tirante_final_con_error,z_lateral_trapecio)
+        H2_1=calcular_altura_de_energía(altura_del_canal_final,tirante_final_con_error,Q_caudal,area)
+        S2=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,perimetro,area)
+        Sf=(pendiente_1+S2)/2
+        Hf=Sf*delta_x
+        H2_2=altura_de_energia_1-Hf
+        delta_H2=abs(H2_1-H2_2)
+        delta_H2_final=delta_H2
+        tirante_final_con_error += error
+    return tirante_final_con_error
+
+# FUNCIONES BÁSICAS:
 # solera es lo mismo que base
 
 def calcular_area_rectangulo(base,altura):
@@ -319,5 +470,10 @@ def calcular_area_trapecio(solera,tirante,Z_1):
 def calcular_perimetro_mojado_trapecio(solera,tirante,Z_1) :
     perimetro=2*tirante*(Z_1**2+1)**(1/2)+solera
     return perimetro
+
+def calcular_altura_de_energía(altura_del_canal,tirante,caudal,area) :
+    altura=altura_del_canal+tirante+(caudal/area)**2/(2*g_gravedad)
+    return altura
+
 
 inicio()
