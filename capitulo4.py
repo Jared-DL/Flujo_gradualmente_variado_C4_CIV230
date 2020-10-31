@@ -345,8 +345,8 @@ def calcular_H2_para_seccion_rectangular(tirante_inicial,altura_del_canal_inicia
     tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.0001)
     tirante_final-=0.0001
     tirante_final=hallar_tirante_final_con_error_rectangular(tirante_final,S1,H1,altura_del_canal_final,delta_x,0.00001)
-    A2=calcular_area_trapecio(b_solera,tirante_final,z_lateral_trapecio)
-    P2=calcular_perimetro_mojado_trapecio(b_solera,tirante_final,z_lateral_trapecio)
+    A2=calcular_area_rectangulo(b_solera,tirante_final)
+    P2=calcular_perimetro_mojado_rectangulo(b_solera,tirante_final)
     H2_1=calcular_altura_de_energía(altura_del_canal_inicial,tirante_final,Q_caudal,A2)
     S2=calcular_pendiente(Q_caudal,n_coeficiente_de_manning,P2,A2)
     Sf=(S1+S2)/2
